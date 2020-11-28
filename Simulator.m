@@ -1,12 +1,12 @@
 function [tm,state] = Simulator( const )
     tspan = 0:const.dt:const.tf;
-    initialConditions = [const.q_0; const.q_dot_0; const.L_0];
+    initialConditions = [const.q_0; const.q_dot_0; const.L_0; const.w_0'];
     %[tm, state] = ode45(@pendulum, tspan, initialConditions);
     
     tm = tspan';
     
     % use RK4
-    state = zeros(length(tspan),3);
+    state = zeros(length(tspan),length(initialConditions));
     state(1,:) = initialConditions;
     for i = 1:length(tspan)-1
         currentState = state(i,:);
@@ -28,27 +28,46 @@ function [tm,state] = Simulator( const )
         newState(3) = min(const.L, max(const.L_min, L));
     end
     
+    function [potential, dw] = neuron(t, x, w)
+        % adapt the weight using LMS 
+        v = w'*x;
+        % calculate error from desired trajectory
+        freq = sqrt(const.G/const.L);
+        d = pi*sin(2*pi*freq*t);
+        e = 3*sign(x(3));
+        dw = const.eta*x*e;
+        potential = tanh(v);
+    end
+
     function  stateDeriv = pendulum(t, state)
         phi = state(1);
         phi_dot = state(2);
         L = state(3);
-
+        w = state(4:6);
+        
         G = const.G;
         B = const.B;
         L_dot_max = const.L_dot_max;
 
-        L_dot = 0;
+%         % how a human behaves
+%         L_dot = 0;
+%         epsilon = 0.01;
+%         % controller for optimal swinging
+%         % stand up if going through phi=0
+%         if abs(phi) < epsilon
+%            L_dot = -L_dot_max;
+%         end
+%         % squat if at apex phi_dot=0
+%         if abs(phi_dot) < epsilon
+%            L_dot = L_dot_max;
+%         end
 
-        epsilon = 0.01;
-        % controller for optimal swinging
-        % stand up if going through phi=0
-        if abs(phi) < epsilon
-           L_dot = -L_dot_max;
-        end
-        % squat if at apex phi_dot=0
-        if abs(phi_dot) < epsilon
-           L_dot = L_dot_max;
-        end
+        % get the potential based on inputs
+        input = [1; phi; phi_dot];
+        [potential, dw] = neuron(t, input, w);
+
+        % set the extension of the leg to the neuron potential
+        L_dot = L_dot_max*potential;
 
         % prevent the rider from exceeding the height bounds
         if L >= const.L && L_dot > 0
@@ -56,10 +75,10 @@ function [tm,state] = Simulator( const )
         elseif L <= const.L_min && L_dot < 0
            L_dot = 0.0;
         end
-
+        
         momentumTerm = -2*L_dot/L*phi_dot;
         dampingTerm = -B*phi_dot; % viscous only
         gravityTerm =  - G/L*sin(phi);
-        stateDeriv = [phi_dot; momentumTerm+dampingTerm+gravityTerm; L_dot];
+        stateDeriv = [phi_dot; momentumTerm+dampingTerm+gravityTerm; L_dot; dw];
     end
 end

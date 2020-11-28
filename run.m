@@ -20,6 +20,10 @@ if doplot
 
     yyaxis right;
     plot(tm, state(:,2), '.-');
+    % plot desired trajectory
+    freq = sqrt(simConst.G/simConst.L);
+    d = pi/2*sin(2*pi*freq*tm);
+    %plot(tm,d,'k-');
     ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
     
     subplot(2,1,2);
@@ -34,6 +38,20 @@ if doplot
     plot(state(:,1),state(:,2));
     xlabel('$\phi$ [rad]','interpreter','latex');
     ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
+    improvePlot();
+    
+    % neuron parameters
+    figure;
+    subplot(3,1,1);
+    plot(tm, state(:,4));
+    ylabel('w0');
+    subplot(3,1,2);
+    plot(tm, state(:,5));
+    ylabel('w1');
+    subplot(3,1,3);
+    plot(tm, state(:,6));
+    ylabel('w2');
+    xlabel('time [s]');
     improvePlot();
 end
 
@@ -71,12 +89,12 @@ if doanim
     ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
     improvePlot();
     
-    %playAnimation
+    playAnimation
     
-    % write animation
+    % write animation to video or gif
     %vidObj = VideoWriter('pendulum','MPEG-4');
     %open(vidObj)
     %writeAnimation(vidObj, 'FrameRate',30)
-    writeAnimation('pendulum.gif', 'FrameRate',30,'LoopCount',1)
+    %writeAnimation('pendulum.gif', 'FrameRate',30,'LoopCount',1)
     %close(vidObj)
 end

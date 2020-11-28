@@ -1,0 +1,3 @@
+ok learning using LMS
+seems to hit limit cycle
+cost function is sin in velocity
