@@ -89,12 +89,12 @@ if doanim
     ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
     improvePlot();
     
-    playAnimation
+    %playAnimation
     
     % write animation to video or gif
     %vidObj = VideoWriter('pendulum','MPEG-4');
     %open(vidObj)
     %writeAnimation(vidObj, 'FrameRate',30)
-    writeAnimation('pendulum.gif', 'FrameRate',30,'LoopCount',1)
+    writeAnimation('pendulum.gif', 'FrameRate',15,'LoopCount',1)
     %close(vidObj)
 end

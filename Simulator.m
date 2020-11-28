@@ -30,9 +30,11 @@ function [tm,state] = Simulator( const )
     
     function [potential, dw] = neuron(x, w, e)
         % adapt the weight using LMS 
+        w = [0.1; -50; 0];
         v = w'*x;
         dw = const.eta*x*e;
-        potential = tanh(v);
+        % needs hysteresis on action potential
+        potential = -tanh(v);
     end
 
     function  stateDeriv = pendulum(t, state)
@@ -62,9 +64,9 @@ function [tm,state] = Simulator( const )
         % get the potential based on inputs
         freq = sqrt(const.G/const.L);
         %desired_phi_dot = 10*sin(2*pi*freq*t);
-        desired_phi = 1.5*(phi_best)*sin(2*pi*freq*t);
+        desired_phi = 2*(phi_best)*sin(2*pi*freq*t);
         error = desired_phi-phi;
-        input = [1; phi; phi_dot];
+        input = [1; sin(phi)^2; abs(phi_dot)];
         [potential, dw] = neuron(input, w, error);
 
         % set the extension of the leg to the neuron potential
@@ -83,7 +85,7 @@ function [tm,state] = Simulator( const )
         else
             dphi_best = 0;
         end
-            
+        
         momentumTerm = -2*L_dot/L*phi_dot;
         dampingTerm = -B*phi_dot; % viscous only
         gravityTerm =  - G/L*sin(phi);
