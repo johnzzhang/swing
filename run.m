@@ -16,24 +16,24 @@ if doplot
     subplot(2,1,1);
     yyaxis left;
     plot(tm, state(:,1), '.-');
-    ylabel('q (rad)');
+    ylabel('$\phi$ [rad]','interpreter','latex');
 
     yyaxis right;
     plot(tm, state(:,2), '.-');
-    ylabel('qdot (rad/s)');
+    ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
     
     subplot(2,1,2);
     plot(tm, state(:,3), '.-');
-    ylabel('L (m)');
+    ylabel('$L$ [m]','interpreter','latex');
     
-    xlabel('t (s)');
+    xlabel('$t$ [s]','interpreter','latex');
     improvePlot();
     
     % phase plane
     figure;
     plot(state(:,1),state(:,2));
-    xlabel('q');
-    ylabel('qdot');
+    xlabel('$\phi$ [rad]','interpreter','latex');
+    ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
     improvePlot();
 end
 
@@ -44,8 +44,8 @@ if doanim
     x_pos = @(t) simConst.L*sin(interp1(tm,state(:,1),t));
     y_pos = @(t) -simConst.L*cos(interp1(tm,state(:,1),t));
     
-    q = @(t) interp1(tm,state(:,1),t);
-    qdot = @(t) interp1(tm,state(:,2),t);
+    phi = @(t) interp1(tm,state(:,1),t);
+    phi_dot = @(t) interp1(tm,state(:,2),t);
     
     tspan = [0 simConst.tf];
     
@@ -65,11 +65,19 @@ if doanim
     
     ax2 = subplot(1,2,2);
     hold on;
-    fanimator(ax2,@(t) plot(q(t),qdot(t),'r*'),'AnimationRange',tspan);
-    fanimator(ax2,@fplot,q,qdot,tspan,'b-');
-    xlabel('q');
-    ylabel('qdot');
+    fanimator(ax2,@(t) plot(phi(t),phi_dot(t),'r*'),'AnimationRange',tspan);
+    fanimator(ax2,@fplot,phi,phi_dot,tspan,'b-');
+    xlabel('$\phi$ [rad]','interpreter','latex');
+    ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
     improvePlot();
     
-    playAnimation
+    
+    %playAnimation
+    
+    % write animation
+    %vidObj = VideoWriter('pendulum','MPEG-4');
+    %open(vidObj)
+    %writeAnimation(vidObj, 'FrameRate',30)
+    writeAnimation('pendulum.gif', 'FrameRate',30,'LoopCount',1)
+    %close(vidObj)
 end
