@@ -1,0 +1,26 @@
+function [tm, state] = Simulator( const )
+    
+
+
+    for i = 1:length(time)
+        q(i) = state(1);
+        qdot(i) = state(2);
+        a2(i) = state(3);
+        a1(i) = state(4);
+        a0(i) = state(5);
+
+        state = RK4_step(state, time(i));
+        
+        k1 = pendulum(state, t);
+        k2 = pendulum(state+0.5*k1*dt, t+0.5*dt);
+        k3 = pendulum(state+0.5*k2*dt, t+0.5*dt);
+        k4 = pendulum(state+k3*dt, t+dt);
+
+        RK4Slope = (k1+2*k2+2*k3+k4)/6;
+        newState = state + dt*RK4Slope;
+    end
+    
+    function stateDeriv = Pendulum(state)
+        
+    end
+end

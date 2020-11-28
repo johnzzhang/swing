@@ -1,0 +1,14 @@
+function const = SimulationConst()
+    const.
+
+    const.M = 1;
+    const.G = 9.8;
+    const.L = 2;
+    const.J = const.M*const.L^2;
+    const.B = 0.1;
+
+    const.q_0 = 0;
+    const.q_dot_0 = 0;
+    
+end
+
