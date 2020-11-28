@@ -9,7 +9,28 @@ simConst = SimulationConst();
 % run simulator
 [tm, state] = Simulator( simConst );
 
-if doplot
+if doplot    
+    % phase plane
+    figure;
+    plot(state(:,1),state(:,2));
+    xlabel('$\phi$ [rad]','interpreter','latex');
+    ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
+    improvePlot();
+    
+    % neuron parameters
+    figure;
+    subplot(3,1,1);
+    plot(tm, state(:,4));
+    ylabel('w0');
+    subplot(3,1,2);
+    plot(tm, state(:,5));
+    ylabel('w1');
+    subplot(3,1,3);
+    plot(tm, state(:,6));
+    ylabel('w2');
+    xlabel('time [s]');
+    improvePlot();
+    
     % generalized coordinates
     figure;
 
@@ -31,27 +52,6 @@ if doplot
     ylabel('$\phi_{\textrm{best}}$ [rad]','interpreter','latex');
     
     xlabel('$t$ [s]','interpreter','latex');
-    improvePlot();
-    
-    % phase plane
-    figure;
-    plot(state(:,1),state(:,2));
-    xlabel('$\phi$ [rad]','interpreter','latex');
-    ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
-    improvePlot();
-    
-    % neuron parameters
-    figure;
-    subplot(3,1,1);
-    plot(tm, state(:,4));
-    ylabel('w0');
-    subplot(3,1,2);
-    plot(tm, state(:,5));
-    ylabel('w1');
-    subplot(3,1,3);
-    plot(tm, state(:,6));
-    ylabel('w2');
-    xlabel('time [s]');
     improvePlot();
 end
 
