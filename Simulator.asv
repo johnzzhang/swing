@@ -1,26 +1,40 @@
-function [tm, state] = Simulator( const )
+function [tm,state] = Simulator( const )
+    tspan = 0:const.dt:const.tf;
+    initialConditions = [const.q_0; const.q_dot_0; const.L_0];
+    [tm, state] = ode45(@pendulum, tspan, initialConditions);
     
-
-
-    for i = 1:length(time)
-        q(i) = state(1);
-        qdot(i) = state(2);
-        a2(i) = state(3);
-        a1(i) = state(4);
-        a0(i) = state(5);
-
-        state = RK4_step(state, time(i));
-        
-        k1 = pendulum(state, t);
-        k2 = pendulum(state+0.5*k1*dt, t+0.5*dt);
-        k3 = pendulum(state+0.5*k2*dt, t+0.5*dt);
-        k4 = pendulum(state+k3*dt, t+dt);
-
-        RK4Slope = (k1+2*k2+2*k3+k4)/6;
-        newState = state + dt*RK4Slope;
-    end
-    
-    function stateDeriv = Pendulum(state)
-        
+    function  stateDeriv = pendulum(t, state)
+       phi = state(1);
+       phi_dot = state(2);
+       L = state(3);
+       
+       G = const.G;
+       L_dot_max = const.L_dot_max;
+       
+       L_dot = 0;
+       
+       epsilon = 0.2;
+       % controller for optimal swinging
+       % stand up if going through phi=0
+       if abs(phi) < epsilon
+           L_dot = -L_dot_max;
+       end
+       % squat if at apex phi_dot=0
+       if abs(phi_dot) < epsilon
+           L_dot = L_dot_max;
+       end
+           
+       % prevent the rider from exceeding the height bounds
+       epsilon = 0.001;
+       if L >= const.L && L_dot > 0
+           L_dot = -epsilon*L_dot_max;
+       elseif L <= const.L_min && L_dot < 0
+           L_dot = epsilon*L_dot_max;
+       end
+       
+       % limit the length
+       L = min(const.L_min, max(const.L, L));
+       
+       stateDeriv = [phi_dot; -2*L_dot/L*phi_dot - G/L*sin(phi); L_dot];
     end
 end
