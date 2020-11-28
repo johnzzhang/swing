@@ -1,6 +1,6 @@
 function [tm,state] = Simulator( const )
     tspan = 0:const.dt:const.tf;
-    initialConditions = [const.q_0; const.q_dot_0; const.L_0; const.w_0'];
+    initialConditions = [const.phi_0; const.phi_dot_0; const.L_0; const.w_0'; const.phi_best];
     %[tm, state] = ode45(@pendulum, tspan, initialConditions);
     
     tm = tspan';
@@ -28,13 +28,9 @@ function [tm,state] = Simulator( const )
         newState(3) = min(const.L, max(const.L_min, L));
     end
     
-    function [potential, dw] = neuron(t, x, w)
+    function [potential, dw] = neuron(x, w, e)
         % adapt the weight using LMS 
         v = w'*x;
-        % calculate error from desired trajectory
-        freq = sqrt(const.G/const.L);
-        d = pi*sin(2*pi*freq*t);
-        e = 3*sign(x(3));
         dw = const.eta*x*e;
         potential = tanh(v);
     end
@@ -44,6 +40,7 @@ function [tm,state] = Simulator( const )
         phi_dot = state(2);
         L = state(3);
         w = state(4:6);
+        phi_best = state(7);
         
         G = const.G;
         B = const.B;
@@ -63,8 +60,12 @@ function [tm,state] = Simulator( const )
 %         end
 
         % get the potential based on inputs
+        freq = sqrt(const.G/const.L);
+        %desired_phi_dot = 10*sin(2*pi*freq*t);
+        desired_phi = 1.5*(phi_best)*sin(2*pi*freq*t);
+        error = desired_phi-phi;
         input = [1; phi; phi_dot];
-        [potential, dw] = neuron(t, input, w);
+        [potential, dw] = neuron(input, w, error);
 
         % set the extension of the leg to the neuron potential
         L_dot = L_dot_max*potential;
@@ -76,9 +77,16 @@ function [tm,state] = Simulator( const )
            L_dot = 0.0;
         end
         
+        % check if new amplitude is greater than previous best
+        if abs(phi) > phi_best 
+            dphi_best = (abs(phi)-phi_best)/const.dt;
+        else
+            dphi_best = 0;
+        end
+            
         momentumTerm = -2*L_dot/L*phi_dot;
         dampingTerm = -B*phi_dot; % viscous only
         gravityTerm =  - G/L*sin(phi);
-        stateDeriv = [phi_dot; momentumTerm+dampingTerm+gravityTerm; L_dot; dw];
+        stateDeriv = [phi_dot; momentumTerm+dampingTerm+gravityTerm; L_dot; dw; dphi_best];
     end
 end

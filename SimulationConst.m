@@ -1,7 +1,7 @@
 function const = SimulationConst()
     % RK4 parameters
     const.dt = 0.001;
-    const.tf = 20;
+    const.tf = 100;
 
     % pendulum parameters
     const.M = 1;
@@ -15,12 +15,13 @@ function const = SimulationConst()
     const.L_min = 0.8*const.L; % max standing height
     
     % initial conditions
-    const.q_0 = pi/16;
-    const.q_dot_0 = 0;
+    const.phi_0 = pi/32;
+    const.phi_dot_0 = 0;
     const.L_0 = const.L; % start squatting
     
     % neuron parameters
     const.w_0 = [0 0 0]; % weights
-    const.eta = 3; % learning parameters
+    const.eta = 10; % learning parameters
+    const.phi_best = 0; % biggest swing amplitude
 end
 

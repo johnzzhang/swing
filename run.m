@@ -13,22 +13,22 @@ if doplot
     % generalized coordinates
     figure;
 
-    subplot(2,1,1);
+    subplot(3,1,1);
     yyaxis left;
     plot(tm, state(:,1), '.-');
     ylabel('$\phi$ [rad]','interpreter','latex');
 
     yyaxis right;
     plot(tm, state(:,2), '.-');
-    % plot desired trajectory
-    freq = sqrt(simConst.G/simConst.L);
-    d = pi/2*sin(2*pi*freq*tm);
-    %plot(tm,d,'k-');
     ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
     
-    subplot(2,1,2);
+    subplot(3,1,2);
     plot(tm, state(:,3), '.-');
     ylabel('$L$ [m]','interpreter','latex');
+    
+    subplot(3,1,3);
+    plot(tm, state(:,7), '.-');
+    ylabel('$\phi_{\textrm{best}}$ [rad]','interpreter','latex');
     
     xlabel('$t$ [s]','interpreter','latex');
     improvePlot();
@@ -95,6 +95,6 @@ if doanim
     %vidObj = VideoWriter('pendulum','MPEG-4');
     %open(vidObj)
     %writeAnimation(vidObj, 'FrameRate',30)
-    %writeAnimation('pendulum.gif', 'FrameRate',30,'LoopCount',1)
+    writeAnimation('pendulum.gif', 'FrameRate',30,'LoopCount',1)
     %close(vidObj)
 end
