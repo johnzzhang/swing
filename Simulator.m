@@ -41,20 +41,20 @@ function [tm,state] = Simulator( const )
         epsilon = 0.01;
         % controller for optimal swinging
         % stand up if going through phi=0
-%         if abs(phi) < epsilon
-%            L_dot = -L_dot_max;
-%         end
-%         % squat if at apex phi_dot=0
-%         if abs(phi_dot) < epsilon
-%            L_dot = L_dot_max;
-%         end
+        if abs(phi) < epsilon
+           L_dot = -L_dot_max;
+        end
+        % squat if at apex phi_dot=0
+        if abs(phi_dot) < epsilon
+           L_dot = L_dot_max;
+        end
 
-%         % prevent the rider from exceeding the height bounds
-%         if L >= const.L && L_dot > 0
-%            L_dot = 0.0;
-%         elseif L <= const.L_min && L_dot < 0
-%            L_dot = 0.0;
-%         end
+        % prevent the rider from exceeding the height bounds
+        if L >= const.L && L_dot > 0
+           L_dot = 0.0;
+        elseif L <= const.L_min && L_dot < 0
+           L_dot = 0.0;
+        end
 
         stateDeriv = [phi_dot; -2*L_dot/L*phi_dot - G/L*sin(phi); L_dot];
     end

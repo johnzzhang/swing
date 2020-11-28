@@ -9,11 +9,11 @@ function const = SimulationConst()
     const.B = 0.0;
     
     % height parameter
-    const.L_dot_max = 5; % slew rate m/s
-    const.L_min = 0.9*const.L; % max standing height
+    const.L_dot_max = 100; % slew rate m/s
+    const.L_min = 0.8*const.L; % max standing height
     
     % initial conditions
-    const.q_0 = pi/8;
+    const.q_0 = pi/16;
     const.q_dot_0 = 0;
     const.L_0 = const.L; % start squatting
 end
