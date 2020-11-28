@@ -71,7 +71,6 @@ if doanim
     ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
     improvePlot();
     
-    
     %playAnimation
     
     % write animation

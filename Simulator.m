@@ -34,6 +34,7 @@ function [tm,state] = Simulator( const )
         L = state(3);
 
         G = const.G;
+        B = const.B;
         L_dot_max = const.L_dot_max;
 
         L_dot = 0;
@@ -56,6 +57,9 @@ function [tm,state] = Simulator( const )
            L_dot = 0.0;
         end
 
-        stateDeriv = [phi_dot; -2*L_dot/L*phi_dot - G/L*sin(phi); L_dot];
+        momentumTerm = -2*L_dot/L*phi_dot;
+        dampingTerm = -B*phi_dot; % viscous only
+        gravityTerm =  - G/L*sin(phi);
+        stateDeriv = [phi_dot; momentumTerm+dampingTerm+gravityTerm; L_dot];
     end
 end

@@ -4,9 +4,9 @@ function const = SimulationConst()
 
     const.M = 1;
     const.G = 9.8;
-    const.L = 2;
+    const.L = 1;
     const.J = const.M*const.L^2;
-    const.B = 0.0;
+    const.B = 0.1;
     
     % height parameter
     const.L_dot_max = 100; % slew rate m/s
