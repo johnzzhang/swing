@@ -1,6 +1,6 @@
 function const = SimulationConst()
     % RK4 parameters
-    const.dt = 0.01;
+    const.dt = 0.001;
     const.tf = 50;
 
     % pendulum parameters
@@ -21,7 +21,9 @@ function const = SimulationConst()
     
     % neuron parameters
     const.w_0 = [0 0 0]; % weights
-    const.eta = 2; % learning parameters
+    const.eta = 0.1; % learning parameters
     const.phi_best = 0; % biggest swing amplitude
+    
+    % stochastic parameters
 end
 

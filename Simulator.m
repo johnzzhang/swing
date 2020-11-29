@@ -28,16 +28,16 @@ function [tm,state] = Simulator( const )
         newState(3) = min(const.L, max(const.L_min, L));
     end
     
-    function [potential, w_new] = neuron(x, w, e)
+    function [potential, w_new] = neuron(x, w, desired)
         % adapt the weight using LMS 
         % uncomment below to override
         %w = 1*[0.2; -2.5; 0];
         v = w'*x;
-        
-        % need to fix continuous time adaptation
-        w_new = w + const.eta*x*e;
         % needs hysteresis on action potential
-        potential = -tanh(v);
+        potential = tanh(v);
+        
+        error = desired - potential;
+        w_new = w + const.eta*x*error;
     end
 
     function  stateDeriv = pendulum(t, state)
@@ -64,15 +64,22 @@ function [tm,state] = Simulator( const )
 %            L_dot = L_dot_max;
 %         end
 
-        % get the potential based on inputs
-        freq = sqrt(const.G/const.L);
-        %desired_phi_dot = 10*sin(2*pi*freq*t);
-        %desired_phi = 2*(phi_best)*sin(2*pi*freq*t);
-        error = 2*G*const.L-0.5*const.L*(1-cos(phi))-0.5*phi_dot^2;
-        input = [0; phi; phi_dot];
-        [potential, w_new] = neuron(input, w, error);
-        dw = (w_new-w)/const.dt;
+        % error is based on supervised learning from human model
+        epsilon = 0.01;
+        desired = 0;
+        % stand up if going through phi=0
+        if abs(phi) < epsilon
+           desired = -1;
+        end
+        % squat if at apex phi_dot=0
+        if abs(phi_dot) < epsilon
+           desired = 1;
+        end
+        input = [1; phi; phi_dot];
+        [potential, w_new] = neuron(input, w, desired);
 
+        dw = (w_new-w)/const.dt;
+        
         % set the extension of the leg to the neuron potential
         L_dot = L_dot_max*potential;
 
