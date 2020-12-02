@@ -1,0 +1,3 @@
+ADALINE LMS adaptation
+shouting coach
+works well, except bug where Ldot acts like damping (I suspect)

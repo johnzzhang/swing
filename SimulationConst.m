@@ -1,7 +1,7 @@
 function const = SimulationConst()
     % RK4 parameters
     const.dt = 0.001;
-    const.tf = 50;
+    const.tf = 20;
 
     % pendulum parameters
     const.M = 1;

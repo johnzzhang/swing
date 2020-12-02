@@ -97,9 +97,9 @@ function [tm,state] = Simulator( const )
             dphi_best = 0;
         end
         
-        momentumTerm = -2*L_dot/L*phi_dot;
+        momentumTerm = -2*L_dot/L*phi_dot; % john debug: sometimes causes artificial damping
         dampingTerm = -B*phi_dot; % viscous only
-        gravityTerm =  - G/L*sin(phi);
+        gravityTerm =  -G/L*sin(phi);
         stateDeriv = [phi_dot; momentumTerm+dampingTerm+gravityTerm; L_dot; dw; dphi_best];
     end
 end
