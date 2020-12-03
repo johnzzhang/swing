@@ -1,7 +1,7 @@
 function const = SimulationConst()
     % RK4 parameters
     const.dt = 0.01;
-    const.tf = 30;
+    const.tf = 20;
 
     % pendulum parameters
     const.M = 1;
@@ -15,7 +15,7 @@ function const = SimulationConst()
     const.L_min = 0.8*const.L; % max standing height
     
     % initial conditions
-    const.phi_0 = pi/8; % 5 degrees
+    const.phi_0 = pi/32; % 10 degrees
     const.phi_dot_0 = 0;
     const.L_0 = const.L; % start squatting
     
@@ -26,13 +26,13 @@ function const = SimulationConst()
     
     % Q learning parameters
     const.alpha = 0.1;
-    const.epsilon_0 = 1.0;
+    const.epsilon_0 = 0.0;
     const.gamma = 0.99;
     const.tau = 1e6;
-    const.REWARD_UPDATE = true;
+    const.REWARD_UPDATE = false;
     
     % state space bins
-    const.phiBins = 6; % should be even
-    const.phiDotBins = 6;
+    const.phiBins = 2; % should be even
+    const.phiDotBins = 2;
 end
 

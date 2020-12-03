@@ -10,7 +10,7 @@ function [tm,state,score,phi_best_list, Qnew] = Simulator( const, Q )
     
     % discretized state space
     discPhi = linspace(-pi,pi,const.phiBins+1);
-    discPhiDot = linspace(-10,10,const.phiDotBins+1);
+    discPhiDot = linspace(-15,15,const.phiDotBins+1);
     
     % discretized action space
     actionSpace = [-1 0 1];
@@ -133,7 +133,7 @@ function [tm,state,score,phi_best_list, Qnew] = Simulator( const, Q )
 
         action = 0;
         % choose action based on epsilon-greedy approach
-        if rand() < const.epsilon_0
+        if rand() < const.epsilon_0 && const.REWARD_UPDATE
             % explore
             action = randsample(actionSpace,1);
         else

@@ -14,19 +14,22 @@ Q.squat = rand(simConst.phiBins,simConst.phiDotBins);
 % run with optimal policy
 %load('run6/policies.mat');
 %Q = Q_best;
+Q.stand = [1 0; 0 1];
+Q.stay = [0 0; 0 0];
+Q.squat = [0 1; 1 0];
 
 % run simulator for several trials
-numTrials = 10000;
+numTrials = 1;
 score_list = zeros(length(numTrials),1);
 highscore = 0;
 
 for trial = 1:numTrials
-    if mod(trial,1000) == 0
+    if mod(trial,100) == 0
         trial, simConst.epsilon_0
     end
     
     if simConst.epsilon_0 > 0.01
-        simConst.epsilon_0 = simConst.epsilon_0 - 2/numTrials;
+        simConst.epsilon_0 = simConst.epsilon_0 - 1/numTrials;
     else
         simConst.epsilon_0 = 0.01;
     end
@@ -62,10 +65,10 @@ for i = 1:simConst.phiBins
     end
 end
 discPhi = linspace(-pi,pi,simConst.phiBins);
-discPhiDot = linspace(-pi,pi,simConst.phiDotBins);
+discPhiDot = linspace(-15,15,simConst.phiDotBins);
 [phi,phi_dot]=meshgrid(discPhi, discPhiDot);
 figure;
-imagesc(Qmax)
+imagesc(discPhi,discPhiDot,Qmax)
 xlabel('$\phi$ [rad]','interpreter','latex');
 ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
 grid on;
@@ -73,6 +76,8 @@ view(2);
 colormap(jet(3));
 mycb = colorbar();
 set(mycb, 'YTick', [-1 0 1], 'YTickLabel', {'stand', 'stay', 'squat'});
+xlim([-pi pi]);
+ylim([-15, 15]);
 improvePlot();
 
 if doplot    
