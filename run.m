@@ -11,19 +11,26 @@ Q.stand = rand(simConst.phiBins,simConst.phiDotBins);
 Q.stay  = rand(simConst.phiBins,simConst.phiDotBins);
 Q.squat = rand(simConst.phiBins,simConst.phiDotBins);
 
+% run with optimal policy
+%load('run6/policies.mat');
+%Q = Q_best;
+
 % run simulator for several trials
-numTrials = 50000;
+numTrials = 10000;
 score_list = zeros(length(numTrials),1);
 highscore = 0;
 
 for trial = 1:numTrials
-    if mod(trial,5000) == 0
-        trial
-        % reduce the random ness
-        simConst.epsilon_0 = 0.2*simConst.epsilon_0;
-        simConst.tau = 0.4*simConst.tau;
+    if mod(trial,1000) == 0
+        trial, simConst.epsilon_0
     end
     
+    if simConst.epsilon_0 > 0.01
+        simConst.epsilon_0 = simConst.epsilon_0 - 2/numTrials;
+    else
+        simConst.epsilon_0 = 0.01;
+    end
+        
     [tm, state_new, score_new, phi_best_list_new, Q_new] = Simulator( simConst, Q );
     
     Q = Q_new;
@@ -58,7 +65,7 @@ discPhi = linspace(-pi,pi,simConst.phiBins);
 discPhiDot = linspace(-pi,pi,simConst.phiDotBins);
 [phi,phi_dot]=meshgrid(discPhi, discPhiDot);
 figure;
-surf(phi,phi_dot,Qmax)
+imagesc(Qmax)
 xlabel('$\phi$ [rad]','interpreter','latex');
 ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
 grid on;
@@ -141,9 +148,9 @@ if doanim
     %playAnimation
     
     % write animation to video or gif
-    %vidObj = VideoWriter('pendulum','MPEG-4');
-    %open(vidObj)
-    %writeAnimation(vidObj, 'FrameRate',30)
-    writeAnimation('pendulum.gif', 'FrameRate',15,'LoopCount',1)
-    %close(vidObj)
+    vidObj = VideoWriter('pendulum','MPEG-4');
+    open(vidObj)
+    writeAnimation(vidObj, 'FrameRate',30)
+    %writeAnimation('pendulum.gif', 'FrameRate',15,'LoopCount',1)
+    close(vidObj)
 end

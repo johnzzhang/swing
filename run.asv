@@ -11,17 +11,26 @@ Q.stand = rand(simConst.phiBins,simConst.phiDotBins);
 Q.stay  = rand(simConst.phiBins,simConst.phiDotBins);
 Q.squat = rand(simConst.phiBins,simConst.phiDotBins);
 
+% run with optimal policy
+%load('run6/policies.mat');
+%Q = Q_best;
+
 % run simulator for several trials
-numTrials = 10000;
+numTrials = 5000;
 score_list = zeros(length(numTrials),1);
-highscore = -5000;
+highscore = -1000;
 
 for trial = 1:numTrials
     if mod(trial,100) == 0
         trial
-        % reduce the random ness
-        simConst.tau = simConst.tau*;
+        if numTrials - trial < 10
+            simConst.epsilon_0 = 0;
+        end
     end
+   
+    
+        % reduce the randomness
+        simConst.epsilon_0 = simConst.epsilon_0*exp(-trial/simConst.tau);
     
     [tm, state_new, score_new, phi_best_list_new, Q_new] = Simulator( simConst, Q );
     
@@ -30,6 +39,7 @@ for trial = 1:numTrials
     score_list(trial) = finalScore;
     
     if finalScore >= highscore
+        highscore = finalScore;
         state = state_new;
         score = score_new;
         phi_best_list = phi_best_list_new;
@@ -37,8 +47,10 @@ for trial = 1:numTrials
     end
 end
 
+figure;
 plot(1:numTrials,score_list);
-grid on;
+xlabel('episodes');
+ylabel('score');
 improvePlot();
 
 % plot the policy
@@ -50,9 +62,19 @@ for i = 1:simConst.phiBins
         Qmax(i,j) = actionColor(idx);
     end
 end
+discPhi = linspace(-pi,pi,simConst.phiBins);
+discPhiDot = linspace(-pi,pi,simConst.phiDotBins);
+[phi,phi_dot]=meshgrid(discPhi, discPhiDot);
 figure;
-imagesc(Qmax)
-colorbar;
+surf(phi,phi_dot,Qmax)
+xlabel('$\phi$ [rad]','interpreter','latex');
+ylabel('$\dot{\phi}$ [rad/s]','interpreter','latex');
+grid on;
+view(2);
+colormap(jet(3));
+mycb = colorbar();
+set(mycb, 'YTick', [-1 0 1], 'YTickLabel', {'stand', 'stay', 'squat'});
+improvePlot();
 
 if doplot    
     % phase plane
@@ -127,9 +149,9 @@ if doanim
     %playAnimation
     
     % write animation to video or gif
-    %vidObj = VideoWriter('pendulum','MPEG-4');
-    %open(vidObj)
-    %writeAnimation(vidObj, 'FrameRate',30)
-    writeAnimation('pendulum.gif', 'FrameRate',15,'LoopCount',1)
-    %close(vidObj)
+    vidObj = VideoWriter('pendulum','MPEG-4');
+    open(vidObj)
+    writeAnimation(vidObj, 'FrameRate',30)
+    %writeAnimation('pendulum.gif', 'FrameRate',15,'LoopCount',1)
+    close(vidObj)
 end

@@ -1,4 +1,4 @@
-function [tm,state,score,energy_best_list, Qnew] = Simulator( const, Q )
+function [tm,state,score,phi_best_list, Qnew] = Simulator( const, Q )
     tspan = 0:const.dt:const.tf;
     initialConditions = [const.phi_0; const.phi_dot_0; const.L_0;];
     
@@ -53,11 +53,16 @@ function [tm,state,score,energy_best_list, Qnew] = Simulator( const, Q )
         
         % highest energy
         newEnergy = const.M*const.G*(1-cos(newState(1)))+0.5*const.M*(newState(3)*newState(2))^2;
+        oldEnergy = const.M*const.G*(1-cos(currentState(1)))+0.5*const.M*(currentState(3)*currentState(2))^2;
         if newEnergy > energy_best
             energy_best = newEnergy;
             reward = 1;
         end
         energy_best_list(i+1) = energy_best;
+        
+        if newEnergy < 0.99*oldEnergy
+            reward = 0;
+        end
         
         totalScore = totalScore + reward;
         score(i+1) = totalScore;
@@ -66,12 +71,14 @@ function [tm,state,score,energy_best_list, Qnew] = Simulator( const, Q )
         [~,y] = histc(currentState(2),discPhiDot);
         [Qmax, ~] = maxAction(Q, newState);
         % update action-value function Q
-        if action == -1
-            Q.stand(x,y) = Q.stand(x,y) + const.alpha*(reward + const.gamma*Qmax - Q.stand(x,y));
-        elseif action == 0
-            Q.stay(x,y) = Q.stay(x,y) + const.alpha*(reward + const.gamma*Qmax - Q.stay(x,y));
-        elseif action == 1
-            Q.squat(x,y) = Q.squat(x,y) + const.alpha*(reward + const.gamma*Qmax - Q.squat(x,y));
+        if const.REWARD_UPDATE
+            if action == -1
+                Q.stand(x,y) = Q.stand(x,y) + const.alpha*(reward + const.gamma*Qmax - Q.stand(x,y));
+            elseif action == 0
+                Q.stay(x,y) = Q.stay(x,y) + const.alpha*(reward + const.gamma*Qmax - Q.stay(x,y));
+            elseif action == 1
+                Q.squat(x,y) = Q.squat(x,y) + const.alpha*(reward + const.gamma*Qmax - Q.squat(x,y));
+            end
         end
     end
     
@@ -126,7 +133,7 @@ function [tm,state,score,energy_best_list, Qnew] = Simulator( const, Q )
 
         action = 0;
         % choose action based on epsilon-greedy approach
-        if rand() < const.epsilon_0*exp(-t/const.tau);
+        if rand() < const.epsilon_0
             % explore
             action = randsample(actionSpace,1);
         else
