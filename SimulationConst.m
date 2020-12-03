@@ -26,10 +26,10 @@ function const = SimulationConst()
     
     % Q learning parameters
     const.alpha = 0.1;
-    const.epsilon_0 = 0.0;
+    const.epsilon_0 = 1.0;
     const.gamma = 0.99;
     const.tau = 1e6;
-    const.REWARD_UPDATE = false;
+    const.REWARD_UPDATE = true;
     
     % state space bins
     const.phiBins = 2; % should be even

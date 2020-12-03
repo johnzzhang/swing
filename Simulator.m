@@ -47,7 +47,7 @@ function [tm,state,score,phi_best_list, Qnew] = Simulator( const, Q )
         % highest angle
         if abs(newState(1)) > 1.01*phi_best
             phi_best = abs(newState(1));
-            %reward = 1;
+            reward = 10;
         end
         phi_best_list(i+1) = phi_best;
         

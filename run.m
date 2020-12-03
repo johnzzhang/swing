@@ -7,19 +7,19 @@ doanim = false;
 simConst = SimulationConst();
 
 % action-value function
-Q.stand = rand(simConst.phiBins,simConst.phiDotBins);
-Q.stay  = rand(simConst.phiBins,simConst.phiDotBins);
-Q.squat = rand(simConst.phiBins,simConst.phiDotBins);
+Q.stand = zeros(simConst.phiBins,simConst.phiDotBins);
+Q.stay  = zeros(simConst.phiBins,simConst.phiDotBins);
+Q.squat = zeros(simConst.phiBins,simConst.phiDotBins);
 
 % run with optimal policy
 %load('run6/policies.mat');
 %Q = Q_best;
-Q.stand = [1 0; 0 1];
-Q.stay = [0 0; 0 0];
-Q.squat = [0 1; 1 0];
+%Q.stand = [1 0; 0 1];
+%Q.stay = [0 0; 0 0];
+%Q.squat = [0 1; 1 0];
 
 % run simulator for several trials
-numTrials = 1;
+numTrials = 50000;
 score_list = zeros(length(numTrials),1);
 highscore = 0;
 
@@ -30,6 +30,8 @@ for trial = 1:numTrials
     
     if simConst.epsilon_0 > 0.01
         simConst.epsilon_0 = simConst.epsilon_0 - 1/numTrials;
+    elseif numTrials - trial < 10
+        simConst.epsilon_0 = 0.01;
     else
         simConst.epsilon_0 = 0.01;
     end
